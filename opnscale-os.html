@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OPNSCALE OS — Business Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#080808;--bg2:#111111;--border:#252525;--border2:#333333;
+  --text:#EDE9E2;--text2:#9A9488;--text3:#555;
+  --gold:#ff6a00;--gold2:#ff8c33;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Crimson Pro',Georgia,serif;font-weight:300;overflow-x:hidden;}
+.header{border-bottom:1px solid var(--border);padding:0 48px;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;background:rgba(8,8,8,0.97);backdrop-filter:blur(12px);z-index:100;}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:4px;color:var(--gold);}
+.hm{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;}
+.sb{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:2px;border:1px solid var(--gold);padding:4px 10px;opacity:.7;}
+.nav{display:flex;border-bottom:1px solid var(--border);padding:0 48px;overflow-x:auto;scrollbar-width:none;background:var(--bg);position:sticky;top:64px;z-index:99;}
+.nav::-webkit-scrollbar{display:none;}
+.nt{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:18px 20px;cursor:pointer;color:var(--text3);border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;margin-bottom:-1px;user-select:none;}
+.nt:hover{color:var(--text2);}
+.nt.active{color:var(--gold);border-bottom-color:var(--gold);}
+.sec{display:none;padding:64px 48px;max-width:1200px;margin:0 auto;animation:fi .3s ease;}
+.sec.active{display:block;}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.ey{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:4px;color:var(--gold);text-transform:uppercase;margin-bottom:16px;}
+.st{font-family:'Bebas Neue',sans-serif;font-size:64px;line-height:.95;letter-spacing:2px;margin-bottom:8px;}
+.ss{font-size:18px;color:var(--text2);font-style:italic;margin-bottom:56px;}
+h3{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:20px;}
+h4{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
+p{font-size:16px;line-height:1.7;color:var(--text2);margin-bottom:12px;}
+.tg{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:48px;}
+.tc{background:var(--bg2);border:1px solid var(--border);padding:36px 28px;position:relative;}
+.tc.fl{border-color:var(--gold);}
+.ftag{position:absolute;top:-1px;right:24px;background:var(--gold);color:#000;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:4px 10px;}
+.tb{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;margin-bottom:24px;display:flex;align-items:center;gap:8px;color:var(--text3);}
+.dot{width:6px;height:6px;border-radius:50%;}
+.d1{background:#444;}.d2{background:#888;}.d3{background:var(--gold);}
+.tn{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:3px;line-height:1;}
+.tn.g{color:var(--gold);}
+.tp{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text2);margin-bottom:20px;}
+.td{font-size:14px;color:var(--text2);font-style:italic;margin-bottom:20px;line-height:1.6;border-bottom:1px solid var(--border);padding-bottom:20px;}
+.tf{display:flex;align-items:flex-start;gap:10px;margin-bottom:9px;font-size:13px;color:var(--text2);line-height:1.5;}
+.tf::before{content:'—';color:var(--text3);font-family:'IBM Plex Mono',monospace;font-size:11px;flex-shrink:0;margin-top:1px;}
+.tf.go{color:var(--text);}
+.tf.go::before{content:'✦';color:var(--gold);font-size:9px;margin-top:3px;}
+table{width:100%;border-collapse:collapse;margin-bottom:48px;}
+th{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);text-align:left;padding:12px 20px;border-bottom:1px solid var(--border);background:var(--bg);}
+td{padding:14px 20px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text2);vertical-align:top;line-height:1.6;}
+tr:hover td{background:var(--bg2);}
+td:first-child{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text);white-space:nowrap;}
+.tag{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:3px 8px;margin:2px 2px 2px 0;}
+.tgo{background:rgba(212,168,67,.1);color:var(--gold);border:1px solid rgba(212,168,67,.25);}
+.tgr{background:rgba(255,255,255,.04);color:var(--text2);border:1px solid var(--border);}
+.tgg{background:rgba(74,140,96,.1);color:#5AAD78;border:1px solid rgba(74,140,96,.25);}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-bottom:48px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;margin-bottom:48px;}
+.bl{background:var(--bg2);border:1px solid var(--border);padding:32px;}
+.blt{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;margin-bottom:16px;}
+.bi{display:flex;align-items:flex-start;gap:12px;margin-bottom:11px;font-size:14px;color:var(--text2);line-height:1.5;}
+.bn{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3);flex-shrink:0;margin-top:2px;min-width:24px;}
+.fn{display:flex;flex-direction:column;gap:2px;margin-bottom:48px;}
+.fs{background:var(--bg2);border:1px solid var(--border);padding:24px 32px;display:grid;grid-template-columns:80px 1fr 200px;align-items:center;gap:32px;}
+.fnum{font-family:'Bebas Neue',sans-serif;font-size:48px;color:var(--border2);line-height:1;}
+.fl2{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;margin-bottom:6px;}
+.fd{font-size:14px;color:var(--text2);line-height:1.5;}
+.fm{text-align:right;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3);line-height:2;}
+.fa{height:20px;display:flex;align-items:center;padding:0 32px;}
+.fa::after{content:'';display:block;width:1px;height:20px;background:var(--border);margin:0 auto;}
+.cl{list-style:none;margin-bottom:32px;}
+.cl li{display:flex;align-items:flex-start;gap:14px;padding:14px 20px;border-bottom:1px solid var(--border);font-size:14px;color:var(--text2);line-height:1.5;cursor:pointer;transition:background .15s;user-select:none;}
+.cl li:hover{background:var(--bg2);}
+.cl li.done{text-decoration:line-through;color:var(--text3);}
+.cl li.done .ck{border-color:var(--text3);color:var(--text3);}
+.ck{width:16px;height:16px;border:1px solid var(--border2);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--gold);}
+.cl li:not(.done):hover .ck{border-color:var(--gold);}
+.cls{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;padding:20px 20px 8px;}
+.cow{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:1px;margin-left:auto;flex-shrink:0;}
+.note{border-left:2px solid var(--gold);padding:16px 24px;background:rgba(212,168,67,.04);margin-bottom:32px;font-size:14px;color:var(--text2);font-style:italic;line-height:1.7;}
+.note strong{font-style:normal;color:var(--gold);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:6px;}
+.ic{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;margin-bottom:48px;}
+.icc{background:var(--bg2);border:1px solid var(--border);padding:32px;}
+.ict{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.ii{font-size:14px;color:var(--text2);margin-bottom:10px;line-height:1.5;padding-left:16px;position:relative;}
+.ii::before{content:'·';position:absolute;left:0;color:var(--gold);}
+.div{height:1px;background:var(--border);margin:48px 0;}
+.pb{height:2px;background:var(--border);margin-bottom:8px;}
+.pf{height:100%;background:var(--gold);transition:width .3s;}
+.footer{border-top:1px solid var(--border);padding:32px 48px;display:flex;justify-content:space-between;align-items:center;margin-top:80px;}
+.footer div{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:2px;line-height:2;}
+@media(max-width:900px){
+  .header,.nav{padding:0 20px;}
+  .sec{padding:40px 20px;}
+  .tg,.g2,.g3,.ic{grid-template-columns:1fr;}
+  .fs{grid-template-columns:1fr;}
+  .st{font-size:40px;}
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">OPNSCALE</div>
+  <div class="hm">BUSINESS OS — 29.03.26</div>
+  <div class="sb">VEDANT × PRIYANSHU</div>
+</header>
+
+<nav class="nav">
+  <div class="nt active" onclick="show('ov',this)">01 — Overview</div>
+  <div class="nt" onclick="show('of',this)">02 — Offers & SOW</div>
+  <div class="nt" onclick="show('ic',this)">03 — ICP</div>
+  <div class="nt" onclick="show('op',this)">04 — Operations</div>
+  <div class="nt" onclick="show('pr',this)">05 — 30-Day Prep ✦</div>
+  <div class="nt" onclick="show('sa',this)">06 — Sales</div>
+  <div class="nt" onclick="show('ma',this)">07 — Marketing</div>
+</nav>
+
+<!-- 01 OVERVIEW -->
+<div class="sec active" id="ov">
+  <div class="ey">Business Architecture</div>
+  <div class="st">THE OPNSCALE<br>OPERATING SYSTEM</div>
+  <div class="ss">Three offers. One ICP at different budget stages. One content machine. Priyanshu's time protected at the top.</div>
+
+  <div class="tg">
+    <div class="tc">
+      <div class="tb"><div class="dot d1"></div>Entry — Low Ticket</div>
+      <div class="tn">OPNSCALE</div>
+      <div class="tn" style="color:var(--text2)">PLAYBOOK</div>
+      <div class="tp">$500 — 12-Month Access</div>
+      <div class="td">The self-paced system. Course + community + team access. For the ICP who needs the method before the full investment.</div>
+      <div class="tf">Pre-recorded course modules — Identity Excavation, brand foundations, content basics, platform mechanics</div>
+      <div class="tf">Discord community — Q&A, accountability, wins, weekly prompts</div>
+      <div class="tf">1:1 team access via Discord community chat</div>
+      <div class="tf">Community calls access</div>
+      <div class="tf">Templates: script frameworks, content calendar, brand brief doc, backend SOPs</div>
+      <div class="tf">Notion portal + database</div>
+      <div class="tf">12-month access</div>
+    </div>
+    <div class="tc">
+      <div class="tb"><div class="dot d2"></div>Mid Ticket — 3 Months</div>
+      <div class="tn">OPNSCALE</div>
+      <div class="tn" style="color:var(--text2)">PRESENCE</div>
+      <div class="tp">$2,000 — $1K upfront · $1K on results — 3 Months</div>
+      <div class="td">Personal brand built by the team, overseen by Priyanshu. Identity first, content second. Brand only — no offer layer.</div>
+      <div class="tf">Full Identity Excavation — 6-layer positioning framework</div>
+      <div class="tf">Content strategy scoped to personal brand only</div>
+      <div class="tf">Brand identity + visual system [Observation Board]</div>
+      <div class="tf">Script writing + content batching [Claude Project system]</div>
+      <div class="tf">Team executes; Priyanshu joins bi-weekly calls for bottlenecks</div>
+      <div class="tf">Community calls access</div>
+      <div class="tf go">Discord + WhatsApp + calls — same access as Playbook</div>
+      <div class="tf">Notion portal + database</div>
+    </div>
+    <div class="tc fl">
+      <div class="ftag">Flagship</div>
+      <div class="tb"><div class="dot d3"></div>High Ticket — 6 Months</div>
+      <div class="tn g">OPNSCALE</div>
+      <div class="tn g">LEVERAGE</div>
+      <div class="tp">$4,000 — $2K upfront · $2K on results — 6 Months</div>
+      <div class="td">Full system — brand, offer, business architecture. The only tier where you get Priyanshu building it with you directly.</div>
+      <div class="tf go">Everything in PRESENCE — full Identity Excavation + brand system</div>
+      <div class="tf go">Info offer / productized service built with Priyanshu [Internal tool]</div>
+      <div class="tf go">Business positioning — pricing, ICP, messaging [Internal tool]</div>
+      <div class="tf go">Weekly 1:1 calls with Priyanshu + team</div>
+      <div class="tf go">Direct Discord + WhatsApp — async feedback anytime</div>
+      <div class="tf go">Team executing content strategy alongside client</div>
+      <div class="tf go">Brand identity done FOR them</div>
+      <div class="tf go">Team building + training [setters, editors, ops] for their business</div>
+      <div class="tf go">Backend structure + systems setup</div>
+      <div class="tf">6-month arc: build → execute → monetize → scale</div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="bl">
+      <h4>Revenue Math</h4>
+      <div class="blt">MONTHLY TARGET</div>
+      <div class="bi"><span class="bn">T1</span><span>Volume play — low fulfilment cost. Scales with ads + community momentum.</span></div>
+      <div class="bi"><span class="bn">T2</span><span>5 clients/month → $10K monthly ($5K upfront + $5K on results)</span></div>
+      <div class="bi"><span class="bn">T3</span><span>2–3 clients/month → $8K–$12K monthly ($4K–$6K upfront + rest on results)</span></div>
+      <div class="bi"><span class="bn" style="color:var(--gold)">✦</span><span style="color:var(--gold)">Combined ceiling: $20K+/month realistic</span></div>
+    </div>
+    <div class="bl">
+      <h4>The Core Logic</h4>
+      <div class="blt">WHY THREE TIERS</div>
+      <div class="bi"><span class="bn">—</span><span>Priyanshu's time protected exclusively for LEVERAGE clients</span></div>
+      <div class="bi"><span class="bn">—</span><span>PLAYBOOK runs without Priyanshu — pure async leverage</span></div>
+      <div class="bi"><span class="bn">—</span><span>PRESENCE is team-executed, Priyanshu oversees only</span></div>
+      <div class="bi"><span class="bn">—</span><span>Vedant owns all fulfilment across all three tiers</span></div>
+      <div class="bi"><span class="bn" style="color:var(--gold)">✦</span><span style="color:var(--gold)">One content machine feeds all three entry points</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- 02 OFFERS -->
+<div class="sec" id="of">
+  <div class="ey">Scope of Work</div>
+  <div class="st">WHAT EACH<br>TIER DELIVERS</div>
+  <div class="ss">Exact deliverables, tools, access levels, and the hard lines between tiers.</div>
+
+  <h4>Tier Comparison Matrix</h4>
+  <table>
+    <thead><tr><th>Deliverable</th><th>PLAYBOOK</th><th>PRESENCE</th><th>LEVERAGE</th></tr></thead>
+    <tbody>
+      <tr><td>Identity Excavation</td><td>Framework only (modules)</td><td><span class="tag tgo">Full 6-layer</span></td><td><span class="tag tgo">Full 6-layer</span></td></tr>
+      <tr><td>Content Strategy</td><td>Frameworks + templates</td><td><span class="tag tgo">Brand only — team built</span></td><td><span class="tag tgo">Brand + business — with Priyanshu</span></td></tr>
+      <tr><td>Brand Identity / Visual</td><td>Template access</td><td><span class="tag tgo">Built for them [Obs. Board]</span></td><td><span class="tag tgo">Done FOR them</span></td></tr>
+      <tr><td>Script Writing</td><td>Frameworks only</td><td><span class="tag tgo">Done with team [Claude PS]</span></td><td><span class="tag tgo">Done with Priyanshu</span></td></tr>
+      <tr><td>Priyanshu 1:1 Calls</td><td>❌ None</td><td>Bi-weekly — bottlenecks only</td><td><span class="tag tgo">Weekly — direct</span></td></tr>
+      <tr><td>WhatsApp Access</td><td>❌ None</td><td><span class="tag tgr">Discord + WA team channel</span></td><td><span class="tag tgo">Direct to Priyanshu</span></td></tr>
+      <tr><td>Discord Access</td><td><span class="tag tgr">Community + 1:1 team chat</span></td><td><span class="tag tgr">Same as Playbook</span></td><td><span class="tag tgo">Direct async</span></td></tr>
+      <tr><td>Community Calls</td><td><span class="tag tgr">Included</span></td><td><span class="tag tgr">Included</span></td><td><span class="tag tgo">Included</span></td></tr>
+      <tr><td>Notion Portal</td><td><span class="tag tgr">Included</span></td><td><span class="tag tgr">Included</span></td><td><span class="tag tgo">Included</span></td></tr>
+      <tr><td>Team Execution</td><td>❌ Self-paced</td><td><span class="tag tgo">Team executes</span></td><td><span class="tag tgo">Team alongside client</span></td></tr>
+      <tr><td>Offer Architecture</td><td>❌</td><td>❌</td><td><span class="tag tgo">Core deliverable [Internal tool]</span></td></tr>
+      <tr><td>Business Positioning</td><td>❌</td><td>❌</td><td><span class="tag tgo">ICP, pricing, messaging [Internal tool]</span></td></tr>
+      <tr><td>Team Building + Training</td><td>❌</td><td>❌</td><td><span class="tag tgo">Setters, editors, ops — trained</span></td></tr>
+      <tr><td>Backend Structure + Systems</td><td>❌</td><td>❌</td><td><span class="tag tgo">SOPs + systems built</span></td></tr>
+      <tr><td>Duration</td><td>12 months</td><td>3 months</td><td><span class="tag tgo">6 months</span></td></tr>
+      <tr><td>Price</td><td>$500</td><td>$2,000 ($1K + $1K on results)</td><td><span class="tag tgo">$4,000 ($2K + $2K on results)</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <strong>Hard Line: PRESENCE vs LEVERAGE</strong>
+    PRESENCE clients get their personal brand built. LEVERAGE clients get their brand + business system built directly with Priyanshu. If a PRESENCE client starts asking about offer creation, monetization, or business architecture — that's the upsell signal. Vedant flags it, Priyanshu raises it on the next bi-weekly call.
+  </div>
+
+  <h4>Upsell Triggers</h4>
+  <div class="g3">
+    <div class="bl">
+      <h4>Playbook → Presence</h4>
+      <div class="bi"><span class="bn">—</span><span>30-day mark: showing up consistently in community</span></div>
+      <div class="bi"><span class="bn">—</span><span>Asking questions beyond what modules cover</span></div>
+      <div class="bi"><span class="bn">—</span><span>Has attempted content, wants feedback + execution help</span></div>
+      <div class="bi"><span class="bn" style="color:var(--gold)">✦</span><span style="color:var(--gold)">Vedant sends direct upsell DM at 30-day check-in</span></div>
+    </div>
+    <div class="bl">
+      <h4>Presence → Leverage</h4>
+      <div class="bi"><span class="bn">—</span><span>Brand live and getting traction by month 2</span></div>
+      <div class="bi"><span class="bn">—</span><span>Client asking about monetization or offer structure</span></div>
+      <div class="bi"><span class="bn">—</span><span>Results make the LEVERAGE ROI obvious</span></div>
+      <div class="bi"><span class="bn" style="color:var(--gold)">✦</span><span style="color:var(--gold)">Priyanshu raises it on a bi-weekly call</span></div>
+    </div>
+    <div class="bl">
+      <h4>Post-Leverage</h4>
+      <div class="bi"><span class="bn">—</span><span>Retainer / renewal for continued oversight</span></div>
+      <div class="bi"><span class="bn">—</span><span>Referral — they introduce another LEVERAGE client</span></div>
+      <div class="bi"><span class="bn">—</span><span>Case study asset + testimonial recorded</span></div>
+      <div class="bi"><span class="bn" style="color:var(--gold)">✦</span><span style="color:var(--gold)">Alumni community access maintained</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- 03 ICP -->
+<div class="sec" id="ic">
+  <div class="ey">Ideal Customer Profile</div>
+  <div class="st">HIGH-STATUS FOUNDER<br>WITHOUT ONLINE AUTHORITY</div>
+  <div class="ss">$50K–$5M+ annually. Built real companies. Real wealth. Invisible online. One ICP — three budget entry points.</div>
+
+  <div class="ic">
+    <div class="icc">
+      <div class="ict">Who They Are</div>
+      <div class="ii">Founder, CEO, legacy business owner, investor, agency owner, operator</div>
+      <div class="ii">Age 22–45 — income $50K–$5M+ annually</div>
+      <div class="ii">Business is real and successful. Online presence near zero.</div>
+      <div class="ii">Has tried posting — didn't stick or didn't work</div>
+      <div class="ii">Limited time, efficiency-obsessed</div>
+      <div class="ii">Watches less competent people dominate internet</div>
+      <div class="ii">Feels capped — influence limited to rooms they already occupy</div>
+    </div>
+    <div class="icc">
+      <div class="ict">Core Pains</div>
+      <div class="ii">Invisible despite real-world success — ego conflict</div>
+      <div class="ii">People with less credibility command more attention</div>
+      <div class="ii">Missing deals, partnerships, media due to lack of visibility</div>
+      <div class="ii">Can't translate expertise into content that actually performs</div>
+      <div class="ii">Authority mismatch — real world vs digital world</div>
+      <div class="ii">Fear of becoming irrelevant in the digital era</div>
+      <div class="ii">Fear that younger founders control their industry's narrative</div>
+    </div>
+    <div class="icc">
+      <div class="ict">Dream Outcomes</div>
+      <div class="ii">Online presence that reflects real-world scale</div>
+      <div class="ii">Inbound: investors, clients, media, collaborators</div>
+      <div class="ii">Being a leading voice and thought leader in their field</div>
+      <div class="ii">Global influence beyond geographic limits</div>
+      <div class="ii">Deal flow and partnerships driven by their brand</div>
+      <div class="ii">Legacy — ideas that outlive the business</div>
+      <div class="ii">Recognition, respect, status amplification</div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="bl">
+      <h4>Buying Triggers — What Makes Them Move</h4>
+      <div class="bi"><span class="bn">—</span><span>Seeing a competitor gain massive attention online</span></div>
+      <div class="bi"><span class="bn">—</span><span>Missing a deal or opportunity due to lack of visibility</span></div>
+      <div class="bi"><span class="bn">—</span><span>Younger founders dominating their industry's conversation</span></div>
+      <div class="bi"><span class="bn">—</span><span>Influencers with less credibility commanding their audience</span></div>
+    </div>
+    <div class="bl">
+      <h4>Objections — Pre-Kill In The Presale Asset</h4>
+      <div class="bi"><span class="bn">—</span><span>"I don't have time for content"</span></div>
+      <div class="bi"><span class="bn">—</span><span>"Social media feels cringe"</span></div>
+      <div class="bi"><span class="bn">—</span><span>"I don't want to look like an influencer"</span></div>
+      <div class="bi"><span class="bn">—</span><span>"I don't understand how content actually drives revenue"</span></div>
+    </div>
+  </div>
+
+  <h4>Belief Shifts The Content Must Create</h4>
+  <div class="g2" style="margin-bottom:0">
+    <div class="bl">
+      <div class="bi"><span class="bn">01</span><span>Personal branding is leverage, not vanity</span></div>
+      <div class="bi"><span class="bn">02</span><span>Authority online compounds opportunities over time</span></div>
+    </div>
+    <div class="bl">
+      <div class="bi"><span class="bn">03</span><span>Influence directly translates into deal flow</span></div>
+      <div class="bi"><span class="bn">04</span><span>Narrative control determines reputation — own it or lose it</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- 04 OPS -->
+<div class="sec" id="op">
+  <div class="ey">Operations / Systems / Fulfilment</div>
+  <div class="st">VEDANT OWNS<br>THE BACKEND</div>
+  <div class="ss">Every part of fulfilment runs through Vedant as COO. Priyanshu's only ops touchpoint is LEVERAGE client calls.</div>
+
+  <div class="note">
+    <strong>Org Structure — Updated</strong>
+    Vedant (COO) — owns contracts, payments, onboarding, client portals, automation, check-ins, upsell triggers, and all day-to-day operations across all three tiers. Priyanshu — content, strategy, LEVERAGE client calls only. Single operator model. No fulfilment split.
+  </div>
+
+  <h4>Onboarding Flow</h4>
+  <div class="fn">
+    <div class="fs">
+      <div class="fnum">01</div>
+      <div><div class="fl2">VERBAL CLOSE → CONTRACT + PAYMENT</div><div class="fd">Vedant sends tier-specific DocuSign contract within 1 hour of close. Stripe/Razorpay payment link sent. Auto-invoice generated. No close requires Priyanshu after the call.</div></div>
+      <div class="fm">Owner: Vedant<br>Tools: DocuSign + Stripe<br>SLA: &lt;1hr post-close</div>
+    </div>
+    <div class="fa"></div>
+    <div class="fs">
+      <div class="fnum">02</div>
+      <div><div class="fl2">WELCOME KIT SENT</div><div class="fd">Tier-specific welcome message in Priyanshu's voice. Onboarding video. Access links: Notion portal, Discord, WhatsApp (if applicable). Identity Excavation pre-work doc. First impression set by Vedant, feels like Priyanshu.</div></div>
+      <div class="fm">Owner: Vedant<br>Tools: Notion + Discord + WA<br>SLA: Same day as payment</div>
+    </div>
+    <div class="fa"></div>
+    <div class="fs">
+      <div class="fnum">03</div>
+      <div><div class="fl2">ONBOARDING CALL / ACCESS</div><div class="fd">PLAYBOOK: async welcome video, no live call. PRESENCE: team onboarding call within first week — Vedant runs it. LEVERAGE: Priyanshu onboarding call within 48hrs, booked via Calendly.</div></div>
+      <div class="fm">Owner: Vedant (T1+T2)<br>Priyanshu (T3)<br>SLA: Within 48hrs</div>
+    </div>
+    <div class="fa"></div>
+    <div class="fs">
+      <div class="fnum">04</div>
+      <div><div class="fl2">CLIENT PORTAL ACTIVATED</div><div class="fd">Tier-specific Notion portal live with: progress tracker, content calendar, script drafts, KPI dashboard, check-in schedule, upsell date flagged. Vedant owns portal updates weekly.</div></div>
+      <div class="fm">Owner: Vedant<br>Tools: Notion<br>SLA: Before first call</div>
+    </div>
+  </div>
+
+  <h4>Client Journey By Tier</h4>
+  <table>
+    <thead><tr><th>Milestone</th><th>PLAYBOOK (12mo)</th><th>PRESENCE (3mo)</th><th>LEVERAGE (6mo)</th></tr></thead>
+    <tbody>
+      <tr><td>Day 0–2</td><td>Welcome kit + portal + async video</td><td>Welcome kit + onboarding call booked</td><td>Welcome kit + Priyanshu call in 48hrs</td></tr>
+      <tr><td>Week 1</td><td>Module 1 unlocked + Discord intro</td><td>Identity Excavation pre-work submitted</td><td>Identity Excavation + onboarding call complete</td></tr>
+      <tr><td>Month 1</td><td>Discord check-in DM from Vedant</td><td>Brand identity + visual system complete</td><td>Identity doc done + first content live</td></tr>
+      <tr><td>Month 2</td><td>Community call + upsell convo at 30 days</td><td>Content system running, scripts batched</td><td>Offer architecture work begins</td></tr>
+      <tr><td>Month 3</td><td>Renewal / upgrade DM</td><td>Results review + case study ask + upsell signal</td><td>Monetization layer activated</td></tr>
+      <tr><td>Month 6</td><td>—</td><td>—</td><td>Team built, backend structured, exit review</td></tr>
+      <tr><td>Check-ins</td><td>Monthly Discord DM — Vedant</td><td>Bi-weekly Notion update + WA — Vedant</td><td>Weekly call + daily async if needed</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 05 30-DAY PREP -->
+<div class="sec" id="pr">
+  <div class="ey">30-Day Prep Sprint</div>
+  <div class="st">EVERYTHING THAT<br>NEEDS TO BE BUILT</div>
+  <div class="ss">The complete checklist of what Priyanshu and Vedant need before the machine runs. Click items to check off.</div>
+
+  <div class="pb"><div class="pf" id="prog" style="width:0%"></div></div>
+  <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:2px;margin-bottom:32px" id="plbl">0 / 0 COMPLETE</div>
+
+  <div class="cls">Vedant — Notion Portals</div>
+  <ul class="cl" id="checklist">
+    <li onclick="tick(this)"><div class="ck">✓</div><span>Build PLAYBOOK Notion portal — modules index, templates library, content calendar, KPI tracker, SOP library, community resources</span><span class="cow">Vedant</span></li>
+    <li onclick="tick(this)"><div class="ck">✓</div><span>Build PRESENCE Notion portal — Identity Excavation doc, observation board, script drafts section, content calendar, KPI dashboard, bi-weekly call notes</span><span class="cow">Vedant</span></li>
+    <li onclick="tick(this)"><div class="ck">✓</div><span>Build LEVERAGE Notion portal — full journey tracker, offer architecture section, team-building section, weekly call notes, backend structure docs, internal tool access</span><span class="cow">Vedant</span></li>
+
+    <div class="cls">Vedant — Contracts + Payments</div>
+    <li onclick="tick(this)"><div class="ck">✓</div><span>Write PLAYBOOK contract — 12-month term, community + course access, no 1:1 Priyanshu clause</span><span class="cow">Vedant</span></li>
+    <li onclick="tick(this)"><div class="ck">✓</div><span>Write PRESENCE contract — 3-month term, SOW scoped to brand only (no offer work), team execution terms</span><span class="cow">Vedant</span></li>
+    <li onclick="tick(this)"><div class="ck">✓</div><span>Write LEVERAGE contract — 6-month term, full SOW including offer architecture + team training, NDA clause, payment schedule</span><span class="cow">Vedant</span></li>
+    <li onclick="tick(this)"><div class="ck">✓</div><span>Set up Stripe payment links for all three tiers — auto-invoicing, payment confirmation triggers onboarding automation</span><span class="cow">Vedant</span></li>
+
+    <div class="cls">Vedant — Onboarding Automation</div>
+    <li onclick="tick(this)"><div class="ck">✓</div><span>Build onboarding automation — payment confirmation triggers: Notion portal invite + Discord access + WhatsApp add (PRESENCE/LEVERAGE) + welcome kit email</span><span class="cow">Vedant</span></li>
+    <li onclick="tick(this)"><div class="ck">✓</div><span>Set up Discord server — channels: community-general, Q&A, weekly-wins, weekly-prompts, resources, team-DM (per client), announcements</span><span class="cow">Vedant</span></li>
+    <li onclick="tick(this)"><div class="ck">✓</div><span>Write welcome kit copy per tier in Priyanshu's voice — tone: warm authority, not corporate</span><span class="cow">Vedant + Priyanshu</span></li>
+    <li onclick="tick(this)"><div class="ck">✓</div><span>Set up Calendly — LEVERAGE booking (Priyanshu), PRESENCE onboarding call (Vedant), community calls (all tiers)</span><span class="cow">Vedant</span></li>
+    <li onclick="tick(this)"><div class="ck">✓</div><span>Map client check-in automation — PLAYBOOK: monthly Discord DM, PRESENCE: bi-weekly WA + Notion update, LEVERAGE: weekly call + async</span><span class="cow">Vedant</span></li>
+    <li onclick="tick(this)"><div class="ck">✓</div><span>Flag upsell dates in every portal — PLAYBOOK at day 30, PRESENCE at month 2, LEVERAGE at month 4</span><span class="cow">Vedant</span></li>
+
+    <div class="cls">Vedant + Priyanshu — Systems</div>
+    <li onclick="tick(this)"><div class="ck">✓</div><span>Define internal offer creation tool — what it does, how it runs inside LEVERAGE calls, whether it's Notion-based or custom, build brief</span><span class="cow">Both</span></li>
+    <li onclick="tick(this)"><div class="ck">✓</div><span>Build KPI master tracker — clients per tier, MRR, check-in status, upsell dates flagged, case study candidates</span><span class="cow">Vedant</span></li>
+    <li onclick="tick(this)"><div class="ck">✓</div><span>Set weekly ops review cadence — Vedant + Priyanshu, 30 min every Monday, what's tracked and what's actioned</span><span class="cow">Both</span></li>
+
+    <div class="cls">Priyanshu — Content + Marketing</div>
+    <li onclick="tick(this)"><div class="ck">✓</div><span>Record welcome video for each tier — PLAYBOOK async intro, PRESENCE methodology intro, LEVERAGE personal message from Priyanshu</span><span class="cow">Priyanshu</span></li>
+    <li onclick="tick(this)"><div class="ck">✓</div><span>Write and record presale asset VSL — problem, mechanism (Identity Excavation), proof (Harshit), tiers explained, Priyanshu's story, Calendly CTA</span><span class="cow">Priyanshu</span></li>
+    <li onclick="tick(this)"><div class="ck">✓</div><span>Build Harshit long-form YouTube case study — full transformation, scripted, filmed, edited, published</span><span class="cow">Priyanshu</span></li>
+    <li onclick="tick(this)"><div class="ck">✓</div><span>Write positioning + messaging doc — updated ICP language, pain triggers per tier, content angles for next 60 days</span><span class="cow">Priyanshu</span></li>
+    <li onclick="tick(this)"><div class="ck">✓</div><span>Hire Instagram video editor — brief: reels + story covers, Priyanshu's style, speed-first delivery turnaround</span><span class="cow">Priyanshu</span></li>
+    <li onclick="tick(this)"><div class="ck">✓</div><span>Hire graphic designer — brief: OPNSCALE brand system, story covers, Notion assets, community graphics</span><span class="cow">Priyanshu</span></li>
+    <li onclick="tick(this)"><div class="ck">✓</div><span>Organise and tag all B-roll footage — categories: lifestyle, work sessions, travel, brand moments. Upload to shared drive for editor.</span><span class="cow">Priyanshu</span></li>
+    <li onclick="tick(this)"><div class="ck">✓</div><span>Batch first month of short-form content — 5 story sequences (CTA + credibility), 6 reel scripts, publish schedule set</span><span class="cow">Priyanshu</span></li>
+    <li onclick="tick(this)"><div class="ck">✓</div><span>Set up ManyChat automation — "DM OPNSCALE" trigger → first qualifier question → 24hr follow-up nudge → handoff to Ayush</span><span class="cow">Priyanshu + Vedant</span></li>
+    <li onclick="tick(this)"><div class="ck">✓</div><span>Launch first Meta ad — ICP targeting, PLAYBOOK as low-friction entry, ₹5K INR test budget, creative from story sequence</span><span class="cow">Priyanshu</span></li>
+
+    <div class="cls">Sales — Ayush (Setter)</div>
+    <li onclick="tick(this)"><div class="ck">✓</div><span>Brief Ayush on all three tiers — names (PLAYBOOK / PRESENCE / LEVERAGE), prices, exact SOW, who each is for, hard lines between tiers</span><span class="cow">Priyanshu + Vedant</span></li>
+    <li onclick="tick(this)"><div class="ck">✓</div><span>Give Ayush written setter qualification script — open, revenue/stage question, pain question, budget signal, decision tree (asset vs call)</span><span class="cow">Vedant</span></li>
+    <li onclick="tick(this)"><div class="ck">✓</div><span>Give Ayush presale asset link to send in DMs at the right stage</span><span class="cow">Vedant</span></li>
+    <li onclick="tick(this)"><div class="ck">✓</div><span>Give Ayush Calendly link for booking closing calls with Priyanshu</span><span class="cow">Vedant</span></li>
+    <li onclick="tick(this)"><div class="ck">✓</div><span>Give Ayush Harshit case study link + key testimonials — for sending to relevant leads during qualification</span><span class="cow">Vedant</span></li>
+    <li onclick="tick(this)"><div class="ck">✓</div><span>Set up Ayush daily reporting — leads qualified, calls booked, objections logged, handoffs to Priyanshu flagged</span><span class="cow">Vedant</span></li>
+  </ul>
+</div>
+
+<!-- 06 SALES -->
+<div class="sec" id="sa">
+  <div class="ey">Sales System</div>
+  <div class="st">THE FOUR-STEP<br>SALES MACHINE</div>
+  <div class="ss">Priyanshu only enters at step 4. Ayush qualifies. Asset pre-sells. Call closes. Vedant closes the backend.</div>
+
+  <div class="fn">
+    <div class="fs">
+      <div class="fnum">01</div>
+      <div><div class="fl2">TOP OF FUNNEL — TRAFFIC</div><div class="fd">Organic Instagram stories + reels, long-form YouTube, paid Meta ads. All channels → same CTA: DM "OPNSCALE". ManyChat auto-captures, fires first qualifier. Ayush takes it from there.</div></div>
+      <div class="fm">Channels: IG / YT / Meta<br>CTA: DM OPNSCALE<br>Owner: Priyanshu</div>
+    </div>
+    <div class="fa"></div>
+    <div class="fs">
+      <div class="fnum">02</div>
+      <div><div class="fl2">AYUSH — SETTER QUALIFICATION</div><div class="fd">Ayush manually qualifies every inbound in DMs. Qualification: revenue stage, pain clarity, timeline, budget signal. Decision: send presale asset, or book call directly based on readiness level. Ayush does NOT close.</div></div>
+      <div class="fm">Owner: Ayush<br>Tools: IG DMs + ManyChat<br>KPI: Call-book rate</div>
+    </div>
+    <div class="fa"></div>
+    <div class="fs">
+      <div class="fnum">03</div>
+      <div><div class="fl2">PRESALE ASSET</div><div class="fd">VSL/Loom sent before Priyanshu enters. Covers: the problem (invisible high-status founders), the mechanism (Identity Excavation), proof (Harshit case study + results), the three tiers, Priyanshu's story, Calendly CTA. The call should be a formality by the time they get here.</div></div>
+      <div class="fm">Format: VSL / Loom<br>Length: 10–15 min<br>Goal: Pre-kill objections</div>
+    </div>
+    <div class="fa"></div>
+    <div class="fs">
+      <div class="fnum">04</div>
+      <div><div class="fl2">CLOSING CALL — PRIYANSHU</div><div class="fd">30–45 min. Lead has seen the presale asset, been qualified. Priyanshu: diagnose their specific situation, assign the right tier, anchor value, close. Vedant handles contract + payment within 1hr of verbal close.</div></div>
+      <div class="fm">Owner: Priyanshu<br>Tools: Calendly + Zoom<br>Post-call: Vedant</div>
+    </div>
+  </div>
+
+  <div class="div"></div>
+
+  <div class="g2">
+    <div class="bl">
+      <h4>Ayush — Setter Qualification Script</h4>
+      <div class="blt">DM FLOW</div>
+      <div class="bi"><span class="bn">01</span><span><strong>Open:</strong> "Hey [name] — tell me about what you're building right now?"</span></div>
+      <div class="bi"><span class="bn">02</span><span><strong>Stage:</strong> "Where are you at monthly revenue-wise, roughly?"</span></div>
+      <div class="bi"><span class="bn">03</span><span><strong>Pain:</strong> "What's held you back from building your brand so far?"</span></div>
+      <div class="bi"><span class="bn">04</span><span><strong>Budget:</strong> "Our programs start at $500 and go up to $4K — does that range work?"</span></div>
+      <div class="bi"><span class="bn">05</span><span><strong>Next step:</strong> High signal → book call directly. Lower signal → send presale asset + follow up in 48hrs.</span></div>
+    </div>
+    <div class="bl">
+      <h4>Ayush Briefing — What He Needs</h4>
+      <div class="blt">BEFORE HE STARTS</div>
+      <div class="bi"><span class="bn">—</span><span>Tier names (PLAYBOOK / PRESENCE / LEVERAGE), prices, exact SOW</span></div>
+      <div class="bi"><span class="bn">—</span><span>Who each tier is for — revenue stage, pain type, readiness</span></div>
+      <div class="bi"><span class="bn">—</span><span>Hard lines — what PRESENCE doesn't include vs LEVERAGE</span></div>
+      <div class="bi"><span class="bn">—</span><span>Presale asset link + when to send it</span></div>
+      <div class="bi"><span class="bn">—</span><span>Calendly link + when to book directly</span></div>
+      <div class="bi"><span class="bn">—</span><span>Harshit case study + testimonials for relevant leads</span></div>
+      <div class="bi"><span class="bn">—</span><span>Daily report to Vedant — leads, calls, objections</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- 07 MARKETING -->
+<div class="sec" id="ma">
+  <div class="ey">Marketing System</div>
+  <div class="st">ONE MACHINE.<br>ALL THREE ENTRIES.</div>
+  <div class="ss">Same ICP. Same content. Three budget entry points. Priyanshu executes with speed.</div>
+
+  <div class="g3" style="margin-bottom:48px">
+    <div class="bl">
+      <h4>Instagram Stories</h4>
+      <div class="blt">PRIMARY LEAD GEN</div>
+      <div class="bi"><span class="bn">—</span><span>CTA-driven sequences — 4–5 stories, 2–3x per week</span></div>
+      <div class="bi"><span class="bn">—</span><span>Pain activation → methodology tease → results → DM CTA</span></div>
+      <div class="bi"><span class="bn">—</span><span>Credibility sequences — testimonials, Harshit results</span></div>
+      <div class="bi"><span class="bn">—</span><span>Lifestyle/raw — day-in-the-life, behind OPNSCALE</span></div>
+      <div class="bi"><span class="bn" style="color:var(--gold)">✦</span><span style="color:var(--gold)">Highest converting format — protect this first</span></div>
+    </div>
+    <div class="bl">
+      <h4>Reels + YouTube</h4>
+      <div class="blt">AUTHORITY LAYER</div>
+      <div class="bi"><span class="bn">—</span><span>Reels: 30–60s confrontational hooks, identity-first angles</span></div>
+      <div class="bi"><span class="bn">—</span><span>YouTube: case studies, raw mindset, day-in-the-life</span></div>
+      <div class="bi"><span class="bn">—</span><span>Long-form: Identity Excavation deep-dive, system explainers</span></div>
+      <div class="bi"><span class="bn" style="color:var(--gold)">✦</span><span style="color:var(--gold)">Compound asset — pre-warms every inbound lead</span></div>
+    </div>
+    <div class="bl">
+      <h4>Meta Ads + Setter Outreach</h4>
+      <div class="blt">AMPLIFICATION</div>
+      <div class="bi"><span class="bn">—</span><span>Meta: high-status founder ICP targeting, PLAYBOOK as entry</span></div>
+      <div class="bi"><span class="bn">—</span><span>Remarketing to story viewers who haven't converted</span></div>
+      <div class="bi"><span class="bn">—</span><span>Ayush outreach to warm engagers: saves, comments, replies</span></div>
+      <div class="bi"><span class="bn">—</span><span>Test budget: ₹5,000 INR — scale on proof</span></div>
+    </div>
+  </div>
+
+  <h4>Priyanshu's Marketing Build — 30 Days</h4>
+  <table>
+    <thead><tr><th>Asset</th><th>Format</th><th>Purpose</th><th>When</th></tr></thead>
+    <tbody>
+      <tr><td>Presale VSL</td><td>Loom / video, 10–15 min</td><td>Pre-sells before close, kills objections</td><td><span class="tag tgo">Week 1</span></td></tr>
+      <tr><td>Harshit Case Study</td><td>YouTube, 15–25 min</td><td>Primary proof asset for PRESENCE + LEVERAGE</td><td><span class="tag tgo">Week 1–2</span></td></tr>
+      <tr><td>Story sequence batch</td><td>5 sequences (CTA + credibility)</td><td>Lead gen engine — constant publishing</td><td><span class="tag tgo">Week 1</span></td></tr>
+      <tr><td>Positioning doc</td><td>Internal doc</td><td>ICP language, pain angles, messaging for 60 days</td><td><span class="tag tgo">Week 1</span></td></tr>
+      <tr><td>B-roll organisation</td><td>Drive folder — tagged + sorted</td><td>Editor pulls without asking Priyanshu</td><td><span class="tag tgr">Week 1–2</span></td></tr>
+      <tr><td>Hire editor</td><td>Brief + onboard</td><td>Reels + story covers — editing off Priyanshu</td><td><span class="tag tgo">Week 1</span></td></tr>
+      <tr><td>Hire designer</td><td>Brief + onboard</td><td>Story covers, brand assets, Notion graphics</td><td><span class="tag tgr">Week 2</span></td></tr>
+      <tr><td>Reel batch</td><td>6–8 reels scripted + filmed</td><td>Awareness + authority, feeds story views</td><td><span class="tag tgr">Week 2</span></td></tr>
+      <tr><td>ManyChat live</td><td>Automation flow</td><td>Captures every DM, first qualifier, hands to Ayush</td><td><span class="tag tgo">Week 1</span></td></tr>
+      <tr><td>Meta ad live</td><td>Creative from story sequence</td><td>Cold ICP traffic → PLAYBOOK entry point</td><td><span class="tag tgr">Week 3</span></td></tr>
+    </tbody>
+  </table>
+
+  <h4>Weekly Content Rhythm</h4>
+  <div class="g2">
+    <div class="bl">
+      <h4>Instagram — Weekly</h4>
+      <div class="bi"><span class="bn">MON</span><span>CTA-driven story sequence (pain → DM CTA)</span></div>
+      <div class="bi"><span class="bn">WED</span><span>Reel (confrontational hook, authority angle)</span></div>
+      <div class="bi"><span class="bn">THU</span><span>Credibility sequence (results, testimonials)</span></div>
+      <div class="bi"><span class="bn">SAT</span><span>Lifestyle / raw / behind-OPNSCALE stories</span></div>
+      <div class="bi"><span class="bn">ON</span><span>Ayush monitoring story replies + DM opens all week</span></div>
+    </div>
+    <div class="bl">
+      <h4>YouTube — Monthly</h4>
+      <div class="bi"><span class="bn">W1</span><span>Case study — client transformation + results (Harshit-style)</span></div>
+      <div class="bi"><span class="bn">W2</span><span>Raw mindset / confrontational POV — identity first</span></div>
+      <div class="bi"><span class="bn">W3</span><span>Educational deep-dive — Identity Excavation, the system</span></div>
+      <div class="bi"><span class="bn">W4</span><span>Day-in-the-life / OPNSCALE behind the scenes</span></div>
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>Messaging That Converts — From Data</strong>
+    Competitor stealing deals + quantified revenue loss ($20–30K) + capability gap (you're better, they're more visible) + time-based guilt (6 months behind, year wasted) + direct accusation (no excuses language). These angles drive the highest story reply counts. All content starts here, then adapts per format.
+  </div>
+</div>
+
+<div class="footer">
+  <div>OPNSCALE OS — 29.03.26 — V2<br>VEDANT × PRIYANSHU</div>
+  <div style="text-align:right">INTERNAL — CONFIDENTIAL<br>ALL RIGHTS RESERVED</div>
+</div>
+
+<script>
+function show(id,el){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nt').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function tick(el){
+  el.classList.toggle('done');
+  const all=document.querySelectorAll('#checklist li');
+  const done=document.querySelectorAll('#checklist li.done');
+  const pct=all.length?Math.round(done.length/all.length*100):0;
+  document.getElementById('prog').style.width=pct+'%';
+  document.getElementById('plbl').textContent=done.length+' / '+all.length+' COMPLETE — '+pct+'%';
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  const all=document.querySelectorAll('#checklist li');
+  document.getElementById('plbl').textContent='0 / '+all.length+' COMPLETE — 0%';
+});
+</script>
+</body>
+</html>

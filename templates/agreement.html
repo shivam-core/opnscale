@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>OPNSCALE — Service Agreement</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  @page { size: A4; margin: 36mm 24mm 28mm 24mm; }
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 10.5pt; color: #1A1A18; line-height: 1.65; }
+  .header { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 20px; border-bottom: 2px solid #1A1A18; margin-bottom: 28px; }
+  .logo { font-size: 22pt; font-weight: 700; letter-spacing: 6px; }
+  .logo-sub { font-size: 8pt; letter-spacing: 3px; text-transform: uppercase; color: #9A9790; }
+  .doc-meta { text-align: right; font-size: 9pt; color: #6B6860; line-height: 1.8; }
+  .doc-meta strong { color: #1A1A18; font-weight: 600; }
+  .doc-title { font-size: 18pt; font-weight: 700; margin-bottom: 4px; }
+  .doc-subtitle { font-size: 10pt; color: #6B6860; margin-bottom: 28px; }
+  .parties { display: flex; gap: 20px; margin-bottom: 28px; }
+  .party-card { flex: 1; border: 1px solid #E8E5DF; border-radius: 6px; padding: 18px 20px; }
+  .party-label { font-size: 8pt; letter-spacing: 3px; text-transform: uppercase; color: #FF6A00; font-weight: 600; margin-bottom: 8px; }
+  .party-name { font-size: 13pt; font-weight: 600; margin-bottom: 4px; }
+  .party-detail { font-size: 9.5pt; color: #6B6860; line-height: 1.7; }
+  .tier-banner { background: #1A1A18; color: #FFF; border-radius: 6px; padding: 18px 24px; margin-bottom: 28px; display: flex; justify-content: space-between; align-items: center; }
+  .tier-badge-label { font-size: 8pt; letter-spacing: 3px; text-transform: uppercase; color: #FF6A00; margin-bottom: 4px; }
+  .tier-badge-name { font-size: 16pt; font-weight: 700; letter-spacing: 4px; }
+  .tier-price { font-size: 16pt; font-weight: 700; color: #FF6A00; text-align: right; }
+  .tier-duration { font-size: 9pt; color: rgba(255,255,255,0.5); text-align: right; margin-top: 2px; }
+  .section { margin-bottom: 24px; }
+  .section-number { font-size: 8pt; letter-spacing: 3px; text-transform: uppercase; color: #FF6A00; font-weight: 600; margin-bottom: 4px; }
+  .section-title { font-size: 12pt; font-weight: 700; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid #E8E5DF; }
+  .section p { color: #6B6860; margin-bottom: 6px; }
+  table.dtable { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+  .dtable th { font-size: 8pt; letter-spacing: 2px; text-transform: uppercase; color: #9A9790; text-align: left; padding: 8px 10px; border-bottom: 2px solid #D0CDC6; font-weight: 600; }
+  .dtable td { padding: 9px 10px; border-bottom: 1px solid #E8E5DF; font-size: 10pt; color: #6B6860; }
+  .dtable td:first-child { font-weight: 500; color: #1A1A18; width: 40%; }
+  .tag { display: inline-block; font-size: 8pt; letter-spacing: 1px; text-transform: uppercase; padding: 2px 7px; border-radius: 3px; font-weight: 600; }
+  .tag-y { background: rgba(90,173,120,0.1); color: #3D8B58; border: 1px solid rgba(90,173,120,0.2); }
+  .tag-n { background: rgba(0,0,0,0.03); color: #9A9790; border: 1px solid #E8E5DF; }
+  .pay-grid { display: flex; gap: 14px; margin-bottom: 8px; }
+  .pay-box { flex: 1; border: 1px solid #E8E5DF; border-radius: 6px; padding: 14px 18px; }
+  .pay-label { font-size: 8pt; letter-spacing: 2px; text-transform: uppercase; color: #9A9790; margin-bottom: 4px; }
+  .pay-val { font-size: 16pt; font-weight: 700; }
+  .pay-note { font-size: 9pt; color: #9A9790; margin-top: 3px; }
+  .tlist { list-style: none; padding: 0; }
+  .tlist li { padding: 5px 0 5px 16px; position: relative; color: #6B6860; font-size: 10pt; line-height: 1.6; }
+  .tlist li::before { content: '—'; position: absolute; left: 0; color: #9A9790; }
+  .sigs { display: flex; gap: 28px; margin-top: 36px; padding-top: 20px; border-top: 2px solid #1A1A18; }
+  .sig-block { flex: 1; }
+  .sig-label { font-size: 8pt; letter-spacing: 3px; text-transform: uppercase; color: #FF6A00; font-weight: 600; margin-bottom: 36px; }
+  .sig-line { border-top: 1px solid #D0CDC6; padding-top: 6px; }
+  .sig-name { font-weight: 600; font-size: 10.5pt; }
+  .sig-role { font-size: 9pt; color: #9A9790; }
+  .sig-date { font-size: 9pt; color: #9A9790; margin-top: 6px; }
+  .footer { margin-top: 40px; padding-top: 12px; border-top: 1px solid #E8E5DF; display: flex; justify-content: space-between; font-size: 8pt; color: #9A9790; letter-spacing: 1px; }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div><div class="logo">OPNSCALE</div><div class="logo-sub">Media Agency — Service Agreement</div></div>
+    <div class="doc-meta"><strong>Date:</strong> {{ agreement_date }}<br><strong>Tier:</strong> OPNSCALE {{ tier_name }}<br><strong>Duration:</strong> {{ duration_months }} Months</div>
+  </div>
+
+  <div class="doc-title">Service Agreement</div>
+  <div class="doc-subtitle">This agreement outlines the scope of work, deliverables, terms, and payment structure between the parties below.</div>
+
+  <div class="parties">
+    <div class="party-card"><div class="party-label">Service Provider</div><div class="party-name">OPNSCALE</div><div class="party-detail">Represented by Priyanshu<br>Brand, Content & Business Architecture</div></div>
+    <div class="party-card"><div class="party-label">Client</div><div class="party-name">{{ client_name }}</div><div class="party-detail">{{ client_email }}{% if client_company != '—' %}<br>{{ client_company }}{% endif %}{% if client_phone != '—' %}<br>{{ client_phone }}{% endif %}</div></div>
+  </div>
+
+  <div class="tier-banner">
+    <div><div class="tier-badge-label">Selected Tier</div><div class="tier-badge-name">OPNSCALE {{ tier_name }}</div></div>
+    <div><div class="tier-price">${{ "{:,}".format(total_price) }}</div><div class="tier-duration">{{ duration_months }}-Month Engagement{% if has_results_payment %} · Split Payment{% endif %}</div></div>
+  </div>
+
+  <div class="section"><div class="section-number">Section 01</div><div class="section-title">Scope of Work</div><p>{{ tier_description }}</p><p>The engagement period is <strong>{{ duration_months }} months</strong> from the date of this agreement.</p></div>
+
+  <div class="section"><div class="section-number">Section 02</div><div class="section-title">Deliverables</div>
+    <table class="dtable"><thead><tr><th>Deliverable</th><th>Specification</th></tr></thead><tbody>
+      <tr><td>Identity Excavation</td><td>{{ identity_excavation }}</td></tr>
+      <tr><td>Content Strategy</td><td>{{ content_strategy }}</td></tr>
+      <tr><td>Brand Identity / Visual</td><td>{{ brand_identity }}</td></tr>
+      <tr><td>Script Writing</td><td>{{ script_writing }}</td></tr>
+      <tr><td>Priyanshu 1:1 Calls</td><td>{% if priyanshu_calls != 'None' %}<span class="tag tag-y">{{ priyanshu_calls }}</span>{% else %}<span class="tag tag-n">Not Included</span>{% endif %}</td></tr>
+      <tr><td>WhatsApp Access</td><td>{% if whatsapp_access != 'None' %}<span class="tag tag-y">{{ whatsapp_access }}</span>{% else %}<span class="tag tag-n">Not Included</span>{% endif %}</td></tr>
+      <tr><td>Discord Access</td><td>{{ discord_access }}</td></tr>
+      <tr><td>Community Calls</td><td><span class="tag tag-y">Included</span></td></tr>
+      <tr><td>Notion Portal</td><td><span class="tag tag-y">Included</span></td></tr>
+      <tr><td>Team Execution</td><td>{{ team_execution }}</td></tr>
+      {% if is_leverage %}<tr><td>Offer Architecture</td><td><span class="tag tag-y">Built with Priyanshu</span></td></tr>
+      <tr><td>Business Positioning</td><td><span class="tag tag-y">ICP, pricing, messaging</span></td></tr>
+      <tr><td>Team Building + Training</td><td><span class="tag tag-y">Setters, editors, ops</span></td></tr>
+      <tr><td>Backend Systems</td><td><span class="tag tag-y">SOPs + systems built</span></td></tr>{% endif %}
+    </tbody></table>
+  </div>
+
+  <div class="section"><div class="section-number">Section 03</div><div class="section-title">Payment Structure</div>
+    <div class="pay-grid">
+      <div class="pay-box"><div class="pay-label">Upfront Payment</div><div class="pay-val">${{ "{:,}".format(upfront_amount) }}</div><div class="pay-note">Due on signing</div></div>
+      {% if has_results_payment %}<div class="pay-box"><div class="pay-label">On Results</div><div class="pay-val">${{ "{:,}".format(on_results_amount) }}</div><div class="pay-note">Due upon results delivery</div></div>
+      {% else %}<div class="pay-box"><div class="pay-label">Total</div><div class="pay-val">${{ "{:,}".format(total_price) }}</div><div class="pay-note">One-time payment</div></div>{% endif %}
+    </div>
+    <p style="font-size:9pt;color:#9A9790;margin-top:10px"><strong>Total:</strong> {{ formatted_price }}</p>
+  </div>
+
+  <div class="section"><div class="section-number">Section 04</div><div class="section-title">Terms & Conditions</div>
+    <ul class="tlist">
+      <li>Effective from {{ agreement_date }} for {{ duration_months }} months.</li>
+      <li>Deliverables are specific to OPNSCALE {{ tier_name }} and cannot be exchanged without a formal upgrade.</li>
+      <li>Client agrees to provide timely feedback and materials within the engagement timeline.</li>
+      <li>Upfront payment is non-refundable once work has commenced. Results-based payment is due within 14 days of milestone.</li>
+      <li>OPNSCALE may use anonymized results for marketing unless Client opts out in writing.</li>
+      <li>Proprietary frameworks and internal tools remain OPNSCALE intellectual property.</li>
+      <li>Either party may terminate with 30 days written notice. Completed work remains with Client.</li>
+      {% if is_leverage %}<li>LEVERAGE clients agree to mutual NDA covering business architecture, offer strategy, and internal systems.</li>{% endif %}
+    </ul>
+  </div>
+
+  <div class="sigs">
+    <div class="sig-block"><div class="sig-label">Service Provider</div><div class="sig-line"><div class="sig-name">Priyanshu — OPNSCALE</div><div class="sig-role">Founder & Lead Strategist</div></div><div class="sig-date">Date: {{ agreement_date }}</div></div>
+    <div class="sig-block"><div class="sig-label">Client</div><div class="sig-line"><div class="sig-name">{{ client_name }}</div><div class="sig-role">{{ client_company }}</div></div><div class="sig-date">Date: _______________</div></div>
+  </div>
+
+  <div class="footer"><span>OPNSCALE — Service Agreement</span><span>Confidential — {{ current_year }}</span></div>
+</body>
+</html>
