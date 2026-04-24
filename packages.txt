@@ -1,0 +1,2 @@
+# No system-level dependencies required.
+# Our PDF engine uses fpdf2, which is pure Python and does not need weasyprint or wkhtmltopdf.
